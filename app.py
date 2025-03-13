@@ -1,5 +1,6 @@
 import json
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 from pycaret.clustering import load_model, predict_model
 import pandas as pd
@@ -12,9 +13,7 @@ from PIL import Image
 from dotenv import dotenv_values
 from ydata_profiling import ProfileReport
 from openai import OpenAI
-from datetime import datetime
 
-#env = dotenv_values(".env")
 
 # Wczytaj konfigurację
 config = dotenv_values(".env")
@@ -24,10 +23,7 @@ QDRANT_API_KEY = config.get("QDRANT_API_KEY")
 
 CSV_PATH = "pp_welcome.csv"
 
-
-
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
-
 
 
 def generate_data_profiling_report():
@@ -55,19 +51,12 @@ def get_cluster_names_and_descriptions():
     with open(CLUSTER_NAMES_AND_DESCRIPTIONS, "r", encoding='utf-8') as f:
         return json.load(f)
 
-
 @st.cache_data
 def get_all_participants():
     df = pd.read_csv(DATA, sep=',')
     model = get_model()
     df_with_clusters = predict_model(model, data=df)
     return df_with_clusters
-
-
-
-
-
-
 
 # Wczytanie danych i modeli
 model = get_model()
@@ -207,7 +196,6 @@ if page == "Wizualizacje" and not df.empty:
 
 # Raport Data Profiling
 def generate_report(df):
-    from ydata_profiling import ProfileReport
     return ProfileReport(df, minimal=True).to_html()
 
 if page == "Raport":   
@@ -235,4 +223,3 @@ if page == "Raport":
         components.html(report_cluster, height=400, scrolling=True)
     else:
         st.warning("Najpierw uzupełnij i zapisz swoje dane w sekcji Ankieta!")
-
