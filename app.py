@@ -15,6 +15,38 @@ from ydata_profiling import ProfileReport
 from openai import OpenAI
 
 
+
+DATA_CSV = "pp_welcome.csv"
+MODEL_FILE = "cluster_model"
+CLUSTER_DESC_JSON = "pp_welcome.json"
+
+# Funkcja dodająca nowy rekord i automatycznie przypisująca klastry
+def add_record_with_cluster(new_record_dict):
+    df = pd.read_csv(DATA_CSV)
+
+    # Dodanie nowego rekordu do DataFrame
+    new_record_df = pd.DataFrame([new_record_dict])
+
+    # Ładowanie modelu PyCaret
+    model = load_model(MODEL_FILE)
+
+    # Przypisanie klastra dla nowego rekordu
+    prediction = predict_model(model, data=new_record_df)
+    assigned_cluster = prediction['Cluster'].iloc[0]
+
+    # Wczytanie opisów klastrów z JSON
+    with open(CLUSTER_DESC_JSON, "r", encoding="utf-8") as file:
+        cluster_descriptions = json.load(file)
+
+    # Dodanie klastra i opisu klastra do nowego rekordu
+    new_record_df['Cluster'] = assigned_cluster
+    new_record_df['Cluster_Description'] = cluster_descriptions[str(assigned_cluster)]
+
+    # Aktualizacja całego DataFrame i zapis do CSV
+    df = pd.concat([df, new_record_df], ignore_index=True)
+    df.to_csv(DATA_CSV, index=False)
+
+
 # Wczytaj konfigurację
 config = dotenv_values(".env")
 OPENAI_API_KEY = config.get("OPENAI_API_KEY")
