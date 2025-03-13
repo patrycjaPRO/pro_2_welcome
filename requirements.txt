@@ -1,0 +1,17 @@
+openai
+python-dotenv
+qdrant_client
+streamlit
+streamlit-audiorecorder
+pydub
+
+
+json
+pandas
+pycaret.clustering 
+plotly.express
+matplotlib.pyplot
+seaborn
+os
+PIL
+streamlit.components.v1 
