@@ -51,12 +51,17 @@ def get_cluster_names_and_descriptions():
     with open(CLUSTER_NAMES_AND_DESCRIPTIONS, "r", encoding='utf-8') as f:
         return json.load(f)
 
+
 @st.cache_data
 def get_all_participants():
-    df = pd.read_csv(DATA, sep=',')
-    model = get_model()
-    df_with_clusters = predict_model(model, data=df)
-    return df_with_clusters
+    try:
+        df = pd.read_csv(DATA, sep=',')
+        #st.info("Dane poprawnie wczytano z pp_welcome.csv")
+        return df
+    except FileNotFoundError:
+        st.error("Brak pliku CSV: upewnij się, że pp_welcome.csv jest dostępny w repozytorium GitHub.")
+        return pd.DataFrame()  # pusty DataFrame jako fallback
+    
 
 # Wczytanie danych i modeli
 model = get_model()
